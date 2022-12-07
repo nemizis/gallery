@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Новости
+{% endblock title %}
+
+{% block container %}
+    {% for i in news %}
+        <div class="container text-center">
+            <div class="card">
+                <div class="card-body">
+                    <a class="card-title h5" href="{% url 'news_one' i.pk %}">{{ i.title }}</a>
+                    <p class="card-text">{{ i.Description }}</p>
+                    <p class="card-text"><small class="text-muted">{{ i.date }}</small></p>
+
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock container %}

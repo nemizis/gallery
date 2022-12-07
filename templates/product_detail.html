@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}
+
+{% endblock title %}
+
+{% block container %}
+    <div class="container text-center">
+                    <div class="card" style="width: 18rem;">
+                        <img src="{{ product.img.url }}" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description }}</p>
+                            <p class="card-text"> Цена {{ product.price }}</p>
+                            <a href="#" class="btn btn-primary">Купить</a>
+                        </div>
+                    </div>
+    </div>
+{% endblock container %}

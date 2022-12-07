@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}
+    Вход
+{% endblock title %}
+
+{% block container %}
+    <center> <h1> Вход </h1> </center>
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="row">
+            <h2>
+                {{ attention }}
+            </h2>
+        </div>
+        <div class="container">
+            <label for="id_username">Имя : </label>
+            <input type="text" placeholder="Имя" name="username" required>
+            <label for="id_password">Пароль : </label>
+            <input type="password" placeholder="Пароль" name="password" required>
+            <button type="submit">Войти</button>
+            Впервые у нас? <a href="{% url 'register' %}"> Регистрация </a>
+        </div>
+    </form>
+
+
+{% endblock container %}

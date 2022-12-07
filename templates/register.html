@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}
+    Регистрация
+{% endblock title %}
+
+{% block container %}
+    <center> <h1> Регистрация </h1> </center>
+    <form method="POST" action="{% url 'register' %}">
+    {% csrf_token %}
+    {{ user_form }}
+        {% for field in fields %}
+            <div class="container">
+                <span style="color: red">{{ field.errors }}</span>
+                {{ field.label_tag }}
+                {{ field }}
+            </div>
+        {% endfor %}
+        <div class="container">
+{#            <label for="id_username">Имя : </label>#}
+{#            <input type="text" placeholder="Имя" name="username" required>#}
+{#            <label for="id_email">E-mail : </label>#}
+{#            <input type="email" placeholder="E-mail" name="email" required>#}
+{#            <label for="id_password">Пароль : </label>#}
+{#            <input type="password" placeholder="Пароль" name="password" required>#}
+            <button type="submit">Зарегистрироваться</button>
+            Уже есть аккаунт? <a href="{% url 'login' %}"> Войти </a>
+        </div>
+    </form>
+
+
+{% endblock container %}
