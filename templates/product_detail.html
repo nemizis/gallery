@@ -6,11 +6,11 @@
 {% block container %}
     <div class="container text-center">
                     <div class="card" style="width: 18rem;">
-                        <img src="{{ product.img.url }}" class="card-img-top">
+                        <img src="{{ object.img.url }}" class="card-img-top">
                         <div class="card-body">
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <p class="card-text">{{ product.description }}</p>
-                            <p class="card-text"> Цена {{ product.price }}</p>
+                            <h5 class="card-title">{{ object.name }}</h5>
+                            <p class="card-text">{{ object.description }}</p>
+                            <p class="card-text"> Цена {{ object.price }}</p>
                             <a href="#" class="btn btn-primary">Купить</a>
                         </div>
                     </div>

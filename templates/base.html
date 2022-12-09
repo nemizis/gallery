@@ -95,6 +95,7 @@
                 </ul>
             </div>
             <div class="navbar align-self-center d-flex">
+                {% csrf_token %}
                 {% if user.is_authenticated %}
                     {{ user.username }}
                     <form action="{% url 'logout_user' %}">

@@ -18,7 +18,10 @@ from django.contrib import admin
 from django.urls import path, include
 
 from django.conf import settings
+from django.views.generic import TemplateView
+
 from main import views
+from main.views import ProductListView, ProductDetailView
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -26,11 +29,12 @@ urlpatterns = [
     path('contacts', include('main.urls')),
     path('about/', views.about, name='about'),
     path('admin/', admin.site.urls),
-    path('shop/', views.shop, name='shop'),
-    path('cart/', views.cart, name='cart'),
+    path('shop/', ProductListView.as_view(), name='shop'),
+    path('cart/', views.cart_view, name='cart'),
     path('news/', views.news, name='news'),
     path('news/<int:news_id>', views.news_one, name='news_one'),
-    path('shop/<int:product_id>', views.product_detail, name='product_detail'),
+    path('shop/<int:pk>', ProductDetailView.as_view(), name='product_detail'),
+    path('add_to_cart/<int:pk>', views.add_to_cart, name='add_to_cart')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

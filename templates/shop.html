@@ -7,19 +7,26 @@
 {% block container %}
     <div class="container">
         <div class="row">
-            {% for i in product %}
+            {% for i in object_list %}
+
                 <div class="col-sm">
-                    <div class="card" style="width: 18rem;">
-                        <img src="{{ i.img.url }}" class="card-img-top">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ i.name }}</h5>
-                            <p class="card-text">{{ i.description }}</p>
-                            <p class="card-text"> Цена {{ i.price }}</p>
-                            <a href="#" class="btn btn-primary">Купить</a>
-                            <a href="{% url 'product_detail' i.pk %}" class="btn btn-primary">Подробнее</a>
+                    <form method="POST" action=" {% url 'add_to_cart' i.pk %}">
+                        <div class="card" style="width: 18rem;">
+                            <img src="{{ i.img.url }}" class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ i.name }}</h5>
+                                <p class="card-text">{{ i.description }}</p>
+                                <p class="card-text"> Цена {{ i.price }}</p>
+                                {% csrf_token %}
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Купить</button>
+                                <input type="number" name="quantity" value="1" min="1" required id="id_quantity/">
+                                <a href="{% url 'product_detail' i.pk %}" class="btn btn-primary">Подробнее</a>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
+
             {% endfor %}
         </div>
     </div>

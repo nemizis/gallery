@@ -1,5 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView
+
+from main.forms import AddQuantity
 from main.models import Product, News, Order
 
 
@@ -20,22 +25,26 @@ def contact(request):
     return render(request, 'contacts.html')
 
 
-def shop(request):
-    product = Product.objects.all()
-    return render(request, 'shop.html', context={
-        'product': product,
-    })
+# def shop(request):
+#     product = Product.objects.all()
+#     return render(request, 'shop.html', context={
+#         'product': product,
+#     })
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'shop.html'
 
 
-def cart(request):
-    product = Product.objects.all()
-    user = User.objects.all()
-    order = Order.objects.all()
-    return render(request, 'cart.html', context={
-        'product': product,
-        'user': user,
-        'order': order,
-    })
+@login_required(login_url=reverse_lazy('login'))
+def cart_view(request):
+    cart = Order.get_cart(request.user)
+    items = cart.orderitem_set.all()
+    context = {
+        'cart': cart,
+        'items': items,
+    }
+    return render(request, 'cart.html', context)
 
 
 def news(request):
@@ -52,8 +61,33 @@ def news_one(request, news_id):
     })
 
 
-def product_detail(request, product_id):
-    selected_product = get_object_or_404(Product, pk=product_id)
-    return render(request, 'product_detail.html', context={
-        'product': selected_product,
-    })
+# def product_detail(request, product_id):
+#     selected_product = get_object_or_404(Product, pk=product_id)
+#     return render(request, 'product_detail.html', context={
+#         'product': selected_product,
+#     })
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'product_detail.html'
+
+
+@login_required(login_url=reverse_lazy('login'))
+def add_to_cart(request, pk):
+    if request.method == 'POST':
+        quantity_form = AddQuantity(request.POST)
+        if quantity_form.is_valid():
+            quantity = quantity_form.cleaned_data['quantity']
+            if quantity:
+                cart = Order.get_cart(request.user)
+                product = get_object_or_404(Product, pk=pk)
+                cart.orderitem_set.create(
+                    product=product,
+                    price=product.price,
+                    quantity=quantity,
+                )
+                cart.save()
+                return redirect('cart')
+            else:
+                pass
+    return redirect('shop')

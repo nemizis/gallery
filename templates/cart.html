@@ -1,8 +1,31 @@
 {% extends 'base.html' %}
 {% block title %}
-Козина
+    Козина
 {% endblock title %}
 
 {% block container %}
-    пися
+    <div class="container text-center">
+        <table class="table">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Товар</th>
+                <th scope="col">Количество</th>
+                <th scope="col">Цена</th>
+                <th scope="col">Сумма</th>
+                <th scope="col">
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.product }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.amount }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock container %}

@@ -1,5 +1,10 @@
+from decimal import Decimal
+
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
+from django.db.models import Sum
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.urls import reverse
 
 
@@ -12,16 +17,22 @@ class Payment(models.Model):
     def __str__(self):
         return f'{self.user}, {self.amount}'
 
+    @staticmethod
+    def get_balance(user: User):
+        amount = Payment.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum']
+        return amount or Decimal(0)
+
 
 class Product(models.Model):
     name = models.CharField(max_length=255, verbose_name='Product')
     img = models.ImageField(blank=True, null=True, upload_to='img/')
     price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
+
     # url = models.SlugField(max_length=255, unique=True, db_index=True, blank=True)
 
     def __str__(self):
-        return f'{self.name}, {self.price}'
+        return f'{self.name}'
 
 
 class Order(models.Model):
@@ -43,6 +54,40 @@ class Order(models.Model):
     def __str__(self):
         return f'{self.user}, {self.amount}, {self.status}'
 
+    @staticmethod
+    def get_cart(user: User):
+        cart = Order.objects.filter(
+            user=user,
+            status=Order.STATUS_CART,
+        ).first()
+        if not cart:
+            cart = Order.objects.create(
+                user=user,
+                status=Order.STATUS_CART,
+                amount=0,
+            )
+        return cart
+
+    def get_amount(self):
+        amount = Decimal(0)
+        for i in self.orderitem_set.all():
+            amount += i.amount
+        return amount
+
+    def make_order(self):
+        items = self.orderitem_set.all()
+        if items and self.status == Order.STATUS_CART:
+            self.status = Order.STATUS_WAITING_PAYMENT
+            self.save()
+            auto_payment_unpaid(self.user)
+
+    @staticmethod
+    def get_amount_unpaid(user: User):
+        amount = Order.objects.filter(user=user,
+                                      status=Order.STATUS_WAITING_PAYMENT,
+                                      ).aggregate(Sum('amount'))['amount__sum']
+        return amount or Decimal(0)
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -53,6 +98,10 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'{self.product}, {self.quantity}'
+
+    @property
+    def amount(self):
+        return self.quantity * (self.price - self.discount)
 
 
 class News(models.Model):
@@ -70,3 +119,38 @@ class News(models.Model):
     class Meta:
         verbose_name = 'Новости'
         verbose_name_plural = 'Новости'
+        ordering = ['date']
+
+
+@receiver(post_save, sender=OrderItem)
+def calculate_order_amount(sender, instance, **kwargs):
+    order = instance.order
+    order.amount = order.get_amount()
+    order.save()
+
+
+@receiver(post_delete, sender=OrderItem)
+def calculate_order_amount_delete(sender, instance, **kwargs):
+    order = instance.order
+    order.amount = order.get_amount()
+    order.save()
+
+
+@transaction.atomic()
+def auto_payment_unpaid(user: User):
+    unpaid_orders = Order.objects.filter(user=user,
+                                         status=Order.STATUS_WAITING_PAYMENT
+                                         )
+    for order in unpaid_orders:
+        if Payment.get_balance(user) < order.amount:
+            break
+        order.payment = Payment.objects.all().last()
+        order.status = Order.STATUS_PAID
+        order.save()
+        Payment.objects.create(user=user, amount=-order.amount)
+
+
+@receiver(post_save, sender=Payment)
+def auto_payment(sender, instance, **kwargs):
+    user = instance.user
+    auto_payment_unpaid(user)
