@@ -21,7 +21,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 
 from main import views
-from main.views import ProductListView, ProductDetailView
+from main.views import ProductListView, ProductDetailView, CartDeleteItem
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -34,7 +34,8 @@ urlpatterns = [
     path('news/', views.news, name='news'),
     path('news/<int:news_id>', views.news_one, name='news_one'),
     path('shop/<int:pk>', ProductDetailView.as_view(), name='product_detail'),
-    path('add_to_cart/<int:pk>', views.add_to_cart, name='add_to_cart')
+    path('add_to_cart/<int:pk>', views.add_to_cart, name='add_to_cart'),
+    path('delete_item/<int:pk>', CartDeleteItem.as_view(), name='cart_delete_item'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,10 +2,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView
+from django.utils.decorators import method_decorator
+from django.views.generic import DetailView, ListView, DeleteView
 
 from main.forms import AddQuantity
-from main.models import Product, News, Order
+from main.models import Product, News, Order, OrderItem
 
 
 def index(request):
@@ -91,3 +92,15 @@ def add_to_cart(request, pk):
             else:
                 pass
     return redirect('shop')
+
+
+@method_decorator(login_required, name='dispatch')
+class CartDeleteItem(DeleteView):
+    model = OrderItem
+    template_name = 'cart.html'
+    success_url = reverse_lazy('cart')
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs.filter(order__user=self.request.user)
+        return qs

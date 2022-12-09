@@ -6,7 +6,7 @@
 {% block container %}
     <div class="container text-center">
         <table class="table">
-            <thead class="thead-dark">
+            <thead class="table-dark">
             <tr>
                 <th scope="col">Товар</th>
                 <th scope="col">Количество</th>
@@ -18,13 +18,29 @@
 
             <tbody>
             {% for item in items %}
-            <tr>
-                <td>{{ item.product }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ item.price }}</td>
-                <td>{{ item.amount }}</td>
-            </tr>
+                <tr>
+                    <td>{{ item.product }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.amount }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'cart_delete_item' item.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
             {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="container text-center">
+        <table class="table">
+            <tbody class="table-dark">
+            <tr>
+                <td>Сумма заказа</td>
+                <td>{{ cart.amount }}</td>
+            </tr>
             </tbody>
         </table>
     </div>
