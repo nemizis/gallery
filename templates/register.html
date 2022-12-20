@@ -1,31 +1,25 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block title %}
     Регистрация
 {% endblock title %}
 
 {% block container %}
-    <center> <h1> Регистрация </h1> </center>
-    <form method="POST" action="{% url 'register' %}">
-    {% csrf_token %}
-    {{ user_form }}
-        {% for field in fields %}
-            <div class="container">
+    <div class="container py-5">
+        <h1 class="text-center"> Регистрация </h1>
+        <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            {{ user_form|crispy }}
+            {% for field in fields %}
                 <span style="color: red">{{ field.errors }}</span>
                 {{ field.label_tag }}
                 {{ field }}
+            {% endfor %}
+            <div class="container py-5">
+                <button type="submit">Зарегистрироваться</button>
+                Уже есть аккаунт? <a href="{% url 'login' %}"> Войти </a>
             </div>
-        {% endfor %}
-        <div class="container">
-{#            <label for="id_username">Имя : </label>#}
-{#            <input type="text" placeholder="Имя" name="username" required>#}
-{#            <label for="id_email">E-mail : </label>#}
-{#            <input type="email" placeholder="E-mail" name="email" required>#}
-{#            <label for="id_password">Пароль : </label>#}
-{#            <input type="password" placeholder="Пароль" name="password" required>#}
-            <button type="submit">Зарегистрироваться</button>
-            Уже есть аккаунт? <a href="{% url 'login' %}"> Войти </a>
-        </div>
-    </form>
-
+        </form>
+    </div>
 
 {% endblock container %}

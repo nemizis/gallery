@@ -12,12 +12,11 @@
                 <div class="col-sm">
                     <form method="POST" action=" {% url 'add_to_cart' i.pk %}">
                         <div class="card" style="width: 18rem;">
-                            <img src="{{ i.img.url }}" class="card-img-top">
+                            <img src="{{ i.img.url }}" class="card-img" alt="img">
                             <div class="card-body">
                                 <h5 class="card-title">{{ i.name }}</h5>
                                 <p class="card-text">{{ i.description }}</p>
                                 <p class="card-text"> Цена {{ i.price }}</p>
-                                {% csrf_token %}
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-primary">Купить</button>
                                 <input type="number" name="quantity" value="1" min="1" required id="id_quantity/">

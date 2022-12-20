@@ -6,6 +6,7 @@ from django.db.models import Sum
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.urls import reverse
+from django.db.models import Q
 
 
 class Payment(models.Model):
@@ -66,6 +67,12 @@ class Order(models.Model):
                 status=Order.STATUS_CART,
                 amount=0,
             )
+        return cart
+
+    @staticmethod
+    def get_paid_and_waiting_cart(user: User):
+        cart = Order.objects.filter(user=user).filter(
+            Q(status=Order.STATUS_WAITING_PAYMENT) | Q(status=Order.STATUS_PAID))
         return cart
 
     def get_amount(self):

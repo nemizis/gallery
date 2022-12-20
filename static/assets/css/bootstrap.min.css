@@ -4403,14 +4403,15 @@ textarea.form-control-lg {
 }
 
 .card-img, .card-img-bottom, .card-img-top {
-    width: 100%;
-    height: auto;
+    width: 286px;
+    height: 286px;
+
 
 }
 
 .card-img, .card-img-top {
     border-top-left-radius: calc(.25rem - 1px);
-    border-top-right-radius: calc(.25rem - 1px)
+    border-top-right-radius: calc(.25rem - 1px);
 }
 
 .card-img, .card-img-bottom {
@@ -7462,7 +7463,7 @@ textarea.form-control-lg {
 }
 
 .text-success {
-    color: #198754
+    color: #198754 !important
 }
 
 .text-info {

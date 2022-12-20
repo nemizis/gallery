@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}
+    Управление заказами
+{% endblock title %}
+{% block container %}
+    <div class="container text-center">
+        <table class="table">
+            <thead class="table-dark">
+            <tr>
+                <th scope="col">Пользователь</th>
+                <th scope="col">Дата заказа</th>
+                <th scope="col">Статус заказа</th>
+                <th scope="col">Сумма заказа</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in orders %}
+                <tr>
+                    <th scope="col">{{ item.user }}</th>
+                    <th scope="col">{{ item.creation_time }}</th>
+                    <th scope="col">{{ item.status }}</th>
+                    <th scope="col">{{ item.amount }}</th>
+                    <th scope="col">
+                        <form method="POST" action="{% url 'delete_cart_manager' item.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Удалить</button>
+                        </form>
+                    </th>
+                    <th scope="col">
+                        <form method="POST" action="{% url 'status_paid' item.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Оплачено</button>
+                        </form>
+                    </th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock container %}

@@ -12,7 +12,7 @@
                 <th scope="col">Количество</th>
                 <th scope="col">Цена</th>
                 <th scope="col">Сумма</th>
-                <th scope="col">
+                <th scope="col"></th>
             </tr>
             </thead>
 
@@ -40,6 +40,12 @@
             <tr>
                 <td>Сумма заказа</td>
                 <td>{{ cart.amount }}</td>
+                <td>
+                    <form method="POST" action="{% url 'add_to_my_orders' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Заказать</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>

@@ -18,7 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 from django.conf import settings
-from django.views.generic import TemplateView
 
 from main import views
 from main.views import ProductListView, ProductDetailView, CartDeleteItem
@@ -36,6 +35,12 @@ urlpatterns = [
     path('shop/<int:pk>', ProductDetailView.as_view(), name='product_detail'),
     path('add_to_cart/<int:pk>', views.add_to_cart, name='add_to_cart'),
     path('delete_item/<int:pk>', CartDeleteItem.as_view(), name='cart_delete_item'),
+    path('my_orders', views.my_orders, name='my_orders'),
+    path('add_to_my_orders', views.add_to_my_orders, name='add_to_my_orders'),
+    path('delete_oreder', views.delete_cart, name='delete_cart'),
+    path('manage_orders', views.manage_orders, name='manage_orders'),
+    path('delete_order_manager/<int:pk>', views.delete_cart_manager, name='delete_cart_manager'),
+    path('status_paid/<int:pk>', views.status_paid, name='status_paid'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

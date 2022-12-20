@@ -26,12 +26,6 @@ def contact(request):
     return render(request, 'contacts.html')
 
 
-# def shop(request):
-#     product = Product.objects.all()
-#     return render(request, 'shop.html', context={
-#         'product': product,
-#     })
-
 class ProductListView(ListView):
     model = Product
     template_name = 'shop.html'
@@ -62,12 +56,6 @@ def news_one(request, news_id):
     })
 
 
-# def product_detail(request, product_id):
-#     selected_product = get_object_or_404(Product, pk=product_id)
-#     return render(request, 'product_detail.html', context={
-#         'product': selected_product,
-#     })
-
 class ProductDetailView(DetailView):
     model = Product
     template_name = 'product_detail.html'
@@ -88,7 +76,7 @@ def add_to_cart(request, pk):
                     quantity=quantity,
                 )
                 cart.save()
-                return redirect('cart')
+                return redirect('shop')
             else:
                 pass
     return redirect('shop')
@@ -104,3 +92,67 @@ class CartDeleteItem(DeleteView):
         qs = super().get_queryset()
         qs.filter(order__user=self.request.user)
         return qs
+
+
+@login_required(login_url=reverse_lazy('login'))
+def my_orders(request):
+    cart = Order.get_paid_and_waiting_cart(request.user)
+    context = {
+        'cart': cart,
+    }
+    return render(request, 'my_orders.html', context)
+
+
+@login_required(login_url=reverse_lazy('login'))
+def add_to_my_orders(request):
+    if request.method == 'POST':
+        cart = Order.get_cart(request.user)
+        cart.status = Order.STATUS_WAITING_PAYMENT
+        cart.save()
+        return redirect('my_orders')
+    else:
+        pass
+    return redirect('shop')
+
+
+@login_required(login_url=reverse_lazy('login'))
+def delete_cart(request):
+    if request.method == 'POST':
+        cart = Order.get_paid_and_waiting_cart(request.user)
+        cart.delete()
+        return redirect('my_orders')
+    else:
+        pass
+    return redirect('shop')
+
+
+def manage_orders(request):
+    context = {
+        'orders': Order.objects.all(),
+    }
+    return render(request, 'manage_orders.html', context)
+
+
+@login_required(login_url=reverse_lazy('login'))
+def delete_cart_manager(request, pk):
+    if request.method == 'POST':
+        cart = Order.objects.all()
+        cart = cart.filter(pk=pk)
+        cart.delete()
+        return redirect('manage_orders')
+    else:
+        pass
+    return redirect('manage_orders')
+
+
+@login_required(login_url=reverse_lazy('login'))
+def status_paid(request, pk):
+    if request.method == 'POST':
+        cart = Order.objects.filter(pk=pk)
+        for objects in cart:
+            objects.status = Order.STATUS_PAID
+            objects.save()
+        return redirect('manage_orders')
+    else:
+        pass
+    return redirect('manage_orders')
